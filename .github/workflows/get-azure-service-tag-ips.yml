@@ -1,0 +1,31 @@
+name: Generate Azure ServiceTag IP Files
+ 
+on:
+  schedule:
+    - cron: "0 3 * * 2" # Runs every Monday at 03:00 UTC
+  workflow_dispatch: # Allows manual trigger
+ 
+jobs:
+  generate-azure-ips:
+    runs-on: windows-latest
+ 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Generate Azure IP files
+        shell: pwsh
+        run: |
+          pwsh -ExecutionPolicy Bypass -File ./AzureServiceTagIPs/scripts/get-azure-service-tag-ips.ps1
+ 
+      - name: Upload AzureIPs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzureIPs
+          path: ${{ github.workspace }}/AzureServiceTagIPs/texts
+ 
+      - name: Upload LatestJson artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LatestJson
+          path: ${{ github.workspace }}/AzureServiceTagIPs/json
